@@ -79,5 +79,6 @@ output "lambda_function_names" {
     job_result    = aws_lambda_function.job_result.function_name
     job_submit    = aws_lambda_function.job_submit.function_name
     job_worker    = aws_lambda_function.job_worker.function_name
+    job_enqueue   = aws_lambda_function.job_enqueue.function_name
   }
 }

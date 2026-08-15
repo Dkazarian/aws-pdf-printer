@@ -59,7 +59,8 @@ resource "aws_dynamodb_table" "jobs_table" {
     type = "S"
   }
 
-  stream_enabled = false
+  stream_enabled   = true
+  stream_view_type = "NEW_IMAGE"
   point_in_time_recovery {
     enabled = false
   }

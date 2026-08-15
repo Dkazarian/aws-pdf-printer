@@ -4,6 +4,7 @@ AWS project using:
 
 - API Gateway
 - DynamoDB
+- DynamoDB stream
 - Lambda functions
 - SQS
 - S3

@@ -39,6 +39,12 @@ data "archive_file" "job_worker" {
   output_path = "${path.module}/job-worker.zip"
 }
 
+data "archive_file" "job_enqueue" {
+  type        = "zip"
+  source_dir  = "${path.module}/../lambdas/job_enqueue"
+  output_path = "${path.module}/job-enqueue.zip"
+}
+
 # =============================================================
 # Lambda Functions
 # =============================================================
@@ -85,6 +91,32 @@ resource "aws_lambda_function" "job_worker" {
   handler          = local.lambda_handler
   filename         = data.archive_file.job_worker.output_path
   source_code_hash = data.archive_file.job_worker.output_base64sha256
+}
+
+resource "aws_lambda_function" "job_enqueue" {
+  function_name    = "${local.name_prefix}-job-enqueue"
+  role             = aws_iam_role.job_enqueue_lambda.arn
+  runtime          = local.lambda_runtime
+  handler          = local.lambda_handler
+  filename         = data.archive_file.job_enqueue.output_path
+  source_code_hash = data.archive_file.job_enqueue.output_base64sha256
+}
+
+resource "aws_lambda_event_source_mapping" "jobs_stream" {
+  event_source_arn  = aws_dynamodb_table.jobs_table.stream_arn
+  function_name     = aws_lambda_function.job_enqueue.arn
+  starting_position = "LATEST"
+  batch_size        = 1
+
+  filter_criteria {
+    filter {
+      pattern = jsonencode({
+        eventName = ["INSERT"]
+      })
+    }
+  }
+
+  depends_on = [aws_iam_role_policy.job_enqueue_lambda_stream]
 }
 
 resource "aws_lambda_event_source_mapping" "printing_queue" {

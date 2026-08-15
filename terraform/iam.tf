@@ -161,3 +161,37 @@ resource "aws_iam_role_policy" "job_worker_lambda_access" {
     ]
   })
 }
+
+# =============================================================
+# IAM: Job Queueing Lambda
+# =============================================================
+resource "aws_iam_role" "job_enqueue_lambda" {
+  name               = "${local.name_prefix}-job-enqueue-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_trust.json
+}
+
+resource "aws_iam_role_policy_attachment" "job_enqueue_lambda_logs" {
+  role       = aws_iam_role.job_enqueue_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy" "job_enqueue_lambda_stream" {
+  name = "${local.name_prefix}-job-enqueue-stream-policy"
+  role = aws_iam_role.job_enqueue_lambda.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetRecords",
+          "dynamodb:GetShardIterator",
+          "dynamodb:DescribeStream",
+          "dynamodb:ListStreams"
+        ]
+        Resource = aws_dynamodb_table.jobs_table.stream_arn
+      }
+    ]
+  })
+}
