@@ -64,6 +64,12 @@ resource "aws_lambda_function" "job_status" {
   handler          = local.lambda_handler
   filename         = data.archive_file.job_status.output_path
   source_code_hash = data.archive_file.job_status.output_base64sha256
+
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.jobs_table.name
+    }
+  }
 }
 
 resource "aws_lambda_function" "job_result" {
@@ -73,6 +79,12 @@ resource "aws_lambda_function" "job_result" {
   handler          = local.lambda_handler
   filename         = data.archive_file.job_result.output_path
   source_code_hash = data.archive_file.job_result.output_base64sha256
+
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.jobs_table.name
+    }
+  }
 }
 
 resource "aws_lambda_function" "job_submit" {
@@ -82,6 +94,12 @@ resource "aws_lambda_function" "job_submit" {
   handler          = local.lambda_handler
   filename         = data.archive_file.job_submit.output_path
   source_code_hash = data.archive_file.job_submit.output_base64sha256
+
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.jobs_table.name
+    }
+  }
 }
 
 resource "aws_lambda_function" "job_worker" {
@@ -91,6 +109,13 @@ resource "aws_lambda_function" "job_worker" {
   handler          = local.lambda_handler
   filename         = data.archive_file.job_worker.output_path
   source_code_hash = data.archive_file.job_worker.output_base64sha256
+
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.jobs_table.name
+      QUEUE_URL  = aws_sqs_queue.printing_queue.url
+    }
+  }
 }
 
 resource "aws_lambda_function" "job_enqueue" {
@@ -100,6 +125,13 @@ resource "aws_lambda_function" "job_enqueue" {
   handler          = local.lambda_handler
   filename         = data.archive_file.job_enqueue.output_path
   source_code_hash = data.archive_file.job_enqueue.output_base64sha256
+
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.jobs_table.name
+      QUEUE_URL  = aws_sqs_queue.printing_queue.url
+    }
+  }
 }
 
 resource "aws_lambda_event_source_mapping" "jobs_stream" {
