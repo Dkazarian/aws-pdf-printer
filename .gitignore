@@ -1,0 +1,66 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+terraform/tfplan
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
+!*.example.tfvars.json
+
+# Terraform CLI and local plugin data
+.terraform.d/
+
+# Credentials, certificates, and private keys
+.aws/
+credentials
+config
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*credentials*.json
+*service-account*.json
+
+# Terraform-generated Lambda archives
+terraform/*.zip
+*.zip
+
+# Local build output
+build/
+dist/
+.serverless/
+.aws-sam/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Test and coverage output
+.coverage
+htmlcov/
+coverage.xml
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# IDE and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
