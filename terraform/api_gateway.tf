@@ -3,7 +3,8 @@
 # =============================================================
 
 resource "aws_api_gateway_rest_api" "status" {
-  name = "${local.name_prefix}-api"
+  name               = "${local.name_prefix}-api"
+  binary_media_types = ["application/pdf"]
 }
 
 resource "aws_api_gateway_api_key" "demo" {

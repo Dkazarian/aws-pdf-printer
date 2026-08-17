@@ -132,12 +132,14 @@ resource "aws_lambda_function" "job_result" {
   role             = aws_iam_role.job_result_lambda.arn
   runtime          = local.lambda_runtime
   handler          = local.lambda_handler
+  layers           = [aws_lambda_layer_version.shared.arn]
   filename         = data.archive_file.job_result.output_path
   source_code_hash = data.archive_file.job_result.output_base64sha256
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.jobs_table.name
+      TABLE_NAME  = aws_dynamodb_table.jobs_table.name
+      BUCKET_NAME = aws_s3_bucket.printed_docs.bucket
     }
   }
 }

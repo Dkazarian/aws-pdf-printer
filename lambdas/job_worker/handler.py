@@ -10,12 +10,12 @@ from lambdas.shared.repository import JobRepository
 
 
 logger = logging.getLogger(__name__)
-repository = JobRepository(os.environ.get("TABLE_NAME", "jobs"))
+repository = JobRepository(os.environ["TABLE_NAME"])
 s3 = boto3.client("s3")
 sqs = boto3.client("sqs")
 
-QUEUE_URL = os.environ.get("QUEUE_URL", "")
-BUCKET_NAME = os.environ.get("BUCKET_NAME", "")
+QUEUE_URL = os.environ["QUEUE_URL"]
+BUCKET_NAME = os.environ["BUCKET_NAME"]
 
 
 def lambda_handler(event, context):
@@ -64,7 +64,7 @@ def _get_pending_job(record: dict) -> Job | None:
 
 def _delete_message(record: dict) -> None:
     receipt_handle = record.get("receiptHandle")
-    if receipt_handle and QUEUE_URL:
+    if receipt_handle:
         sqs.delete_message(QueueUrl=QUEUE_URL, ReceiptHandle=receipt_handle)
 
 def _pdf_for_text(text: str) -> bytes:

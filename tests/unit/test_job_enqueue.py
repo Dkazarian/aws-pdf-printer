@@ -2,6 +2,7 @@ import os
 from unittest.mock import call, patch
 
 os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
+os.environ.setdefault("QUEUE_URL", "https://sqs.example/printing")
 
 from lambdas.job_enqueue import handler
 
