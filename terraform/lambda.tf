@@ -155,8 +155,9 @@ resource "aws_lambda_function" "job_worker" {
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.jobs_table.name
-      QUEUE_URL  = aws_sqs_queue.printing_queue.url
+      TABLE_NAME  = aws_dynamodb_table.jobs_table.name
+      QUEUE_URL   = aws_sqs_queue.printing_queue.url
+      BUCKET_NAME = aws_s3_bucket.printed_docs.bucket
     }
   }
 }

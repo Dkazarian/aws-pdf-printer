@@ -40,8 +40,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "printed_docs" {
 # SQS: Printing Queue
 # -------------------------------------------------------------
 resource "aws_sqs_queue" "printing_queue" {
-  name                      = "${local.name_prefix}-printing-queue"
-  message_retention_seconds = 180
+  name                       = "${local.name_prefix}-printing-queue"
+  visibility_timeout_seconds = 60
+  message_retention_seconds  = 86400
 }
 
 # -------------------------------------------------------------
