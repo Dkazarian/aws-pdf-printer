@@ -1,13 +1,11 @@
 import json
 import os
 
-import boto3
-
 from lambdas.shared.models import Job
+from lambdas.shared.repository import JobRepository
 
 
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(os.environ["TABLE_NAME"])
+repository = JobRepository(os.environ["TABLE_NAME"])
 
 
 def lambda_handler(event, context):
@@ -21,15 +19,13 @@ def lambda_handler(event, context):
             "body": json.dumps({"error": "Missing jobId"}),
         }
 
-    job = table.get_item(Key={"id": job_id})
-    if "Item" not in job:
+    job = repository.get(job_id)
+    if job is None:
         return {
             "statusCode": 404,
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"error": "Job not found"}),
         }
-
-    job = Job.from_item(job["Item"])
 
     return {
         "headers": {"Content-Type": "application/json"},

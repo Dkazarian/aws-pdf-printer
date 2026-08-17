@@ -3,14 +3,12 @@ import logging
 import os
 
 
-import boto3
-
-from lambdas.shared.models import Job, JobStatus
+from lambdas.shared.models import Job
+from lambdas.shared.repository import JobRepository
 from lambdas.shared.validation import parse_create_job_request
 
 
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(os.environ["TABLE_NAME"])
+repository = JobRepository(os.environ["TABLE_NAME"])
 logger = logging.getLogger(__name__)
 
 
@@ -24,7 +22,7 @@ def lambda_handler(event, context):
     job = Job(text=text)
 
     try:
-        table.put_item(Item=job.to_item())
+        repository.create(job)
     except Exception:
         logger.exception("Failed to store job in DynamoDB")
         return {

@@ -69,6 +69,11 @@ data "archive_file" "shared_layer" {
   }
 
   source {
+    content  = file("${path.module}/../lambdas/shared/repository.py")
+    filename = "python/lambdas/shared/repository.py"
+  }
+
+  source {
     content  = file("${path.module}/../lambdas/shared/validation.py")
     filename = "python/lambdas/shared/validation.py"
   }

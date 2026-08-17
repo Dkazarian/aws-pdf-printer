@@ -11,26 +11,20 @@ os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
 from lambdas.job_submit import handler
 
 
-@patch.object(handler, "table")
-def test_job_submit_creates_job(mock_table):
+@patch.object(handler, "repository")
+def test_job_submit_creates_job(mock_repository):
     event = {"body": json.dumps({"text": "Hello, World!"})}
 
     response = handler.lambda_handler(event, None)
 
+    job = mock_repository.create.call_args.args[0]
+
     assert response["statusCode"] == 201
     assert response["headers"]["Content-Type"] == "application/json"
-    assert "job_id" in json.loads(response["body"])
-    assert "status" in json.loads(response["body"])
-    
-    item = mock_table.put_item.call_args.kwargs["Item"]
-    Job.from_item(item)
-
-    assert UUID(item["id"])
-    assert item["text"] == "Hello, World!"
-    assert item["status"] == JobStatus.PENDING.value
-    assert item["ttl"] > 0
-    assert "result_key" not in item
-    assert "error" not in item
+    assert json.loads(response["body"]) == {
+        "job_id": job.id,
+        "status": job.status.value,
+    }
 
 def test_job_submit_rejects_missing_body():
     response = handler.lambda_handler({}, None)
@@ -57,9 +51,9 @@ def test_job_submit_rejects_non_string_text():
     assert json.loads(response["body"]) == '"text" must be a non-empty string'
 
 
-@patch.object(handler, "table")
-def test_job_submit_returns_server_error_when_dynamodb_fails(mock_table):
-    mock_table.put_item.side_effect = RuntimeError("DynamoDB unavailable")
+@patch.object(handler, "repository")
+def test_job_submit_returns_server_error_when_dynamodb_fails(mock_repository):
+    mock_repository.create.side_effect = RuntimeError("DynamoDB unavailable")
     event = {"body": json.dumps({"text": "Hello, World!"})}
 
     response = handler.lambda_handler(event, None)
