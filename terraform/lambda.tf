@@ -9,6 +9,18 @@ locals {
 # =============================================================
 # Lambda Deployment Packages
 # =============================================================
+resource "terraform_data" "job_worker_package" {
+  triggers_replace = [
+    filesha256("${path.module}/../lambdas/job_worker/handler.py"),
+    filesha256("${path.module}/../scripts/build_job_worker.py"),
+  ]
+
+  provisioner "local-exec" {
+    working_dir = abspath(path.module)
+    command     = "python ../scripts/build_job_worker.py"
+  }
+}
+
 data "archive_file" "server_status" {
   type        = "zip"
   source_dir  = "${path.module}/../lambdas/server_status"
@@ -35,8 +47,9 @@ data "archive_file" "job_submit" {
 
 data "archive_file" "job_worker" {
   type        = "zip"
-  source_dir  = "${path.module}/../lambdas/job_worker"
+  source_dir  = "${path.module}/../build/job_worker"
   output_path = "${path.module}/job-worker.zip"
+  depends_on  = [terraform_data.job_worker_package]
 }
 
 data "archive_file" "job_enqueue" {
@@ -150,6 +163,7 @@ resource "aws_lambda_function" "job_worker" {
   role             = aws_iam_role.job_worker_lambda.arn
   runtime          = local.lambda_runtime
   handler          = local.lambda_handler
+  layers           = [aws_lambda_layer_version.shared.arn]
   filename         = data.archive_file.job_worker.output_path
   source_code_hash = data.archive_file.job_worker.output_base64sha256
 
