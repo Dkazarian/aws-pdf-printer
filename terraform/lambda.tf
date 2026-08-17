@@ -46,6 +46,42 @@ data "archive_file" "job_enqueue" {
 }
 
 # =============================================================
+# Shared Code Package
+# =============================================================
+
+data "archive_file" "shared_layer" {
+  type        = "zip"
+  output_path = "${path.module}/shared-layer.zip"
+
+  source {
+    content  = file("${path.module}/../lambdas/__init__.py")
+    filename = "python/lambdas/__init__.py"
+  }
+
+  source {
+    content  = file("${path.module}/../lambdas/shared/__init__.py")
+    filename = "python/lambdas/shared/__init__.py"
+  }
+
+  source {
+    content  = file("${path.module}/../lambdas/shared/models.py")
+    filename = "python/lambdas/shared/models.py"
+  }
+
+  source {
+    content  = file("${path.module}/../lambdas/shared/validation.py")
+    filename = "python/lambdas/shared/validation.py"
+  }
+}
+
+resource "aws_lambda_layer_version" "shared" {
+  layer_name          = "${local.name_prefix}-shared"
+  filename            = data.archive_file.shared_layer.output_path
+  source_code_hash    = data.archive_file.shared_layer.output_base64sha256
+  compatible_runtimes = [local.lambda_runtime]
+}
+
+# =============================================================
 # Lambda Functions
 # =============================================================
 resource "aws_lambda_function" "server_status" {
@@ -62,6 +98,7 @@ resource "aws_lambda_function" "job_status" {
   role             = aws_iam_role.job_status_lambda.arn
   runtime          = local.lambda_runtime
   handler          = local.lambda_handler
+  layers           = [aws_lambda_layer_version.shared.arn]
   filename         = data.archive_file.job_status.output_path
   source_code_hash = data.archive_file.job_status.output_base64sha256
 
@@ -92,6 +129,7 @@ resource "aws_lambda_function" "job_submit" {
   role             = aws_iam_role.job_submit_lambda.arn
   runtime          = local.lambda_runtime
   handler          = local.lambda_handler
+  layers           = [aws_lambda_layer_version.shared.arn]
   filename         = data.archive_file.job_submit.output_path
   source_code_hash = data.archive_file.job_submit.output_base64sha256
 

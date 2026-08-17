@@ -1,6 +1,9 @@
 import os
 import json
+from uuid import UUID
 from unittest.mock import patch
+from lambdas.shared.models import Job, JobStatus
+
 
 os.environ.setdefault("TABLE_NAME", "test-jobs")
 os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
@@ -9,26 +12,25 @@ from lambdas.job_submit import handler
 
 
 @patch.object(handler, "table")
-@patch.object(handler.uuid, "uuid4", return_value="job-123")
-def test_job_submit_creates_job(mock_uuid4, mock_table):
+def test_job_submit_creates_job(mock_table):
     event = {"body": json.dumps({"text": "Hello, World!"})}
 
     response = handler.lambda_handler(event, None)
 
     assert response["statusCode"] == 201
-    assert json.loads(response["body"]) == {
-        "job_id": "job-123",
-        "status": "PENDING",
-    }
-    mock_table.put_item.assert_called_once_with(
-        Item={
-            "id": "job-123",
-            "text": "Hello, World!",
-            "status": "PENDING",
-        }
-    )
-    mock_uuid4.assert_called_once_with()
+    assert response["headers"]["Content-Type"] == "application/json"
+    assert "job_id" in json.loads(response["body"])
+    assert "status" in json.loads(response["body"])
+    
+    item = mock_table.put_item.call_args.kwargs["Item"]
+    Job.from_item(item)
 
+    assert UUID(item["id"])
+    assert item["text"] == "Hello, World!"
+    assert item["status"] == JobStatus.PENDING.value
+    assert item["ttl"] > 0
+    assert "result_key" not in item
+    assert "error" not in item
 
 def test_job_submit_rejects_missing_body():
     response = handler.lambda_handler({}, None)

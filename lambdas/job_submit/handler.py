@@ -1,9 +1,12 @@
 import json
 import logging
 import os
-import uuid
+
 
 import boto3
+
+from lambdas.shared.models import Job, JobStatus
+from lambdas.shared.validation import parse_create_job_request
 
 
 dynamodb = boto3.resource("dynamodb")
@@ -12,35 +15,16 @@ logger = logging.getLogger(__name__)
 
 
 def lambda_handler(event, context):
-    raw_body = event.get("body") if isinstance(event, dict) else None
+    try:
+        raw_body = event.get("body") if isinstance(event, dict) else None
+        text = parse_create_job_request(raw_body)
+    except ValueError as exc:
+        return {"statusCode": 400, "body": json.dumps(str(exc))}
 
-    if not raw_body:
-        return {"statusCode": 400, "body": json.dumps("Missing request body")}
+    job = Job(text=text)
 
     try:
-        body = json.loads(raw_body)
-    except (TypeError, json.JSONDecodeError):
-        return {"statusCode": 400, "body": json.dumps("Invalid request body")}
-
-    if not isinstance(body, dict):
-        return {"statusCode": 400, "body": json.dumps("Invalid request body")}
-
-    text = body.get("text")
-
-    if not isinstance(text, str) or not text.strip():
-        return {
-            "statusCode": 400,
-            "body": json.dumps('"text" must be a non-empty string'),
-        }
-
-    job = {
-        "id": str(uuid.uuid4()),
-        "text": text,
-        "status": "PENDING",
-    }
-
-    try:
-        table.put_item(Item=job)
+        table.put_item(Item=job.to_item())
     except Exception:
         logger.exception("Failed to store job in DynamoDB")
         return {
@@ -52,5 +36,5 @@ def lambda_handler(event, context):
     return {
         "statusCode": 201,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps({"job_id": job["id"], "status": job["status"]}),
+        "body": json.dumps({"job_id": job.id, "status": job.status.value}),
     }

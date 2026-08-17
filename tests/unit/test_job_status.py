@@ -11,7 +11,7 @@ from lambdas.job_status import handler
 @patch.object(handler, "table")
 def test_get_job_status_returns_status_for_existing_job(mock_table):
     mock_table.get_item.return_value = {
-        "Item": {"id": "job-123", "status": "PENDING"}
+        "Item": {"id": "job-123", "text": "Hello", "status": "PENDING"}
     }
     event = {"pathParameters": {"jobId": "job-123"}}
 

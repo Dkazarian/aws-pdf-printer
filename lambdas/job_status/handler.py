@@ -3,6 +3,8 @@ import os
 
 import boto3
 
+from lambdas.shared.models import Job
+
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["TABLE_NAME"])
@@ -27,11 +29,13 @@ def lambda_handler(event, context):
             "body": json.dumps({"error": "Job not found"}),
         }
 
+    job = Job.from_item(job["Item"])
+
     return {
         "headers": {"Content-Type": "application/json"},
         "statusCode": 200,
         "body": json.dumps({
             "job_id": job_id,
-            "status": job["Item"].get("status", "UNKNOWN"),
+            "status": job.status.value,
         }),
     }
