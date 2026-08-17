@@ -113,11 +113,6 @@ resource "aws_iam_role_policy" "job_submit_lambda_access" {
         Effect   = "Allow"
         Action   = ["dynamodb:PutItem"]
         Resource = aws_dynamodb_table.jobs_table.arn
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["sqs:SendMessage"]
-        Resource = aws_sqs_queue.printing_queue.arn
       }
     ]
   })
@@ -191,6 +186,11 @@ resource "aws_iam_role_policy" "job_enqueue_lambda_stream" {
           "dynamodb:ListStreams"
         ]
         Resource = aws_dynamodb_table.jobs_table.stream_arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["sqs:SendMessage"]
+        Resource = aws_sqs_queue.printing_queue.arn
       }
     ]
   })
