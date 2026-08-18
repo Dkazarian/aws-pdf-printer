@@ -23,7 +23,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "printed_docs" {
   bucket = aws_s3_bucket.printed_docs.id
 
   rule {
-    id     = "expire-demo-documents"
+    id     = "expire-processed-documents"
     status = "Enabled"
 
     expiration {
@@ -31,7 +31,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "printed_docs" {
     }
 
     filter {
-      prefix = "demo/"
+      prefix = "processed/"
     }
   }
 }

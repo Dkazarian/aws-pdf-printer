@@ -1,6 +1,8 @@
 import json
 from typing import Any
 
+MAX_TEXT_LENGTH = 10_000
+
 
 def parse_create_job_request(raw_body: str | None) -> str:
     if not raw_body:
@@ -17,5 +19,7 @@ def parse_create_job_request(raw_body: str | None) -> str:
     text = body.get("text")
     if not isinstance(text, str) or not text.strip():
         raise ValueError('"text" must be a non-empty string')
+    if len(text) > MAX_TEXT_LENGTH:
+        raise ValueError(f'"text" must not exceed {MAX_TEXT_LENGTH} characters')
 
     return text

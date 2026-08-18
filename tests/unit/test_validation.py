@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from lambdas.shared.validation import parse_create_job_request
+from lambdas.shared.validation import MAX_TEXT_LENGTH, parse_create_job_request
 
 
 def test_parse_create_job_request_returns_text():
@@ -19,6 +19,10 @@ def test_parse_create_job_request_returns_text():
         (json.dumps({}), '"text" must be a non-empty string'),
         (json.dumps({"text": ""}), '"text" must be a non-empty string'),
         (json.dumps({"text": 123}), '"text" must be a non-empty string'),
+        (
+            json.dumps({"text": "x" * (MAX_TEXT_LENGTH + 1)}),
+            f'"text" must not exceed {MAX_TEXT_LENGTH} characters',
+        ),
     ],
 )
 def test_parse_create_job_request_rejects_invalid_body(raw_body, expected_error):
