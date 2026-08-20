@@ -67,8 +67,9 @@ describe("same-origin API routes", () => {
   });
 
   it("returns a PDF result with download headers", async () => {
+    const pdf = "%PDF-1.3\\npdf-bytes";
     mockedRequestResponse.mockResolvedValueOnce(
-      new Response("pdf-bytes", {
+      new Response(pdf, {
         status: 200,
         headers: {
           "content-type": "application/pdf",
@@ -82,7 +83,29 @@ describe("same-origin API routes", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/pdf");
     expect(response.headers.get("content-disposition")).toBe('attachment; filename="job-1.pdf"');
-    await expect(response.text()).resolves.toBe("pdf-bytes");
+    await expect(response.text()).resolves.toBe(pdf);
+    expect(mockedRequestResponse).toHaveBeenCalledWith(
+      "/jobs/job-1/result",
+      { headers: { accept: "application/pdf" } },
+    );
+  });
+
+  it("decodes a base64-encoded PDF result from API Gateway", async () => {
+    const pdf = "%PDF-1.3\\nmock pdf bytes";
+    mockedRequestResponse.mockResolvedValueOnce(
+      new Response(Buffer.from(pdf).toString("base64"), {
+        status: 200,
+        headers: {
+          "content-type": "application/pdf",
+          "content-disposition": 'attachment; filename="job-1.pdf"',
+        },
+      }),
+    );
+
+    const response = await getJobResult(new Request("http://localhost"), { params: { jobId: "job-1" } });
+
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toBe(pdf);
   });
 
   it("returns service status from the normalized upstream response", async () => {
