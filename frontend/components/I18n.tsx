@@ -51,7 +51,7 @@ const translations = {
     english: "English",
     spanish: "Español",
     title: "Imprime texto plano en PDF.",
-    lede: "Un conversor serverless de texto a PDF impulsado por AWS.",
+    lede: "Un conversor serverless de texto a PDF basado en AWS.",
     serviceStatus: "Estado del servicio",
     checking: "COMPROBANDO",
     online: "EN LÍNEA",
