@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AWS PDF Printer Mockup</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0d1117;
+        --panel: #151c25;
+        --line: #2a3543;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --accent: #7dd3fc;
+        --ok: #4ade80;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: radial-gradient(circle at top right, #16283a, var(--bg) 45%);
+        color: var(--text);
+        font: 16px/1.5 Arial, sans-serif;
+        margin: 0;
+        padding: 8vh 20px;
+      }
+
+      .shell {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        margin: auto;
+        max-width: 680px;
+        padding: 32px;
+      }
+
+      .kicker {
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 7vw, 4rem);
+        letter-spacing: -0.06em;
+        line-height: 1;
+        margin: 12px 0;
+      }
+
+      .muted,
+      .message {
+        color: var(--muted);
+      }
+
+      .service {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+        margin: 24px 0;
+      }
+
+      .dot {
+        background: var(--ok);
+        border-radius: 50%;
+        height: 8px;
+        width: 8px;
+      }
+
+      textarea {
+        background: #0f1720;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--text);
+        font: inherit;
+        min-height: 110px;
+        padding: 14px;
+        resize: vertical;
+        width: 100%;
+      }
+
+      .actions {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+        padding: 11px 18px;
+      }
+
+      .submit {
+        background: var(--accent);
+        color: #082f49;
+      }
+
+      .download {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        margin-top: 18px;
+      }
+
+      .section {
+        border-top: 1px solid var(--line);
+        margin-top: 28px;
+        padding-top: 24px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .state {
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .bar {
+        display: flex;
+        gap: 3px;
+        margin-top: 14px;
+      }
+
+      .bar span {
+        background: #263342;
+        border-radius: 99px;
+        flex: 1;
+        height: 8px;
+      }
+
+      .labels {
+        color: var(--muted);
+        display: flex;
+        font-size: 0.7rem;
+        justify-content: space-between;
+        margin-top: 8px;
+      }
+
+      .step {
+        color: #526174;
+        padding: 5px 0;
+      }
+
+      .step::before {
+        content: "●";
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      .step.visible {
+        color: var(--text);
+      }
+
+      .step.current {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .step.complete {
+        color: var(--ok);
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="shell">
+      <div class="kicker">AWS PDF PRINTER</div>
+      <h1>Print plain text to PDF.</h1>
+      <p class="muted">
+        Submit a job and watch the AWS pipeline process it in the background.
+      </p>
+
+      <div class="service">
+        <span class="dot"></span>
+        Service status: <strong>ONLINE</strong>
+      </div>
+
+      <form id="job-form">
+        <label for="text">Text to print</label>
+        <textarea
+          id="text"
+          maxlength="10000"
+          placeholder="Type something to turn into a PDF..."
+        ></textarea>
+
+        <div class="actions">
+          <span class="muted" id="count">0 / 10,000 characters</span>
+          <button class="submit" type="submit">Submit job</button>
+        </div>
+      </form>
+
+      <section class="section">
+        <div class="section-head">
+          <strong>Job progress</strong>
+          <span class="state" id="state">NONE</span>
+        </div>
+
+        <div class="bar">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="labels">
+          <span>NONE</span>
+          <span>PENDING</span>
+          <span>PROCESSING</span>
+          <span>COMPLETED</span>
+        </div>
+
+        <div id="steps">
+          <div class="step">API Gateway</div>
+          <div class="step">Lambda creates a job in DynamoDB</div>
+          <div class="step">Lambda detects the DynamoDB INSERT event and sends the job to the SQS queue</div>
+          <div class="step">Worker Lambda generates the PDF</div>
+          <div class="step">PDF stored in S3</div>
+        </div>
+
+        <p class="message" id="message"></p>
+        <button class="download" type="button" disabled>Download PDF</button>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById("job-form");
+      const text = document.getElementById("text");
+      const count = document.getElementById("count");
+      const state = document.getElementById("state");
+      const message = document.getElementById("message");
+      const bars = [...document.querySelectorAll(".bar span")];
+      const steps = [...document.querySelectorAll(".step")];
+
+      let stage = 0;
+      let timer;
+
+      text.addEventListener("input", () => {
+        count.textContent =
+          text.value.length.toLocaleString() + " / 10,000 characters";
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        clearInterval(timer);
+        stage = 1;
+        paint();
+
+        timer = setInterval(() => {
+          stage += 1;
+          paint();
+
+          if (stage === 3) {
+            clearInterval(timer);
+          }
+        }, 5000);
+      });
+
+      function paint() {
+        const states = ["NONE", "PENDING", "PROCESSING", "COMPLETED"];
+        const messages = [
+          "",
+          "The job is being created and queued.",
+          "A worker Lambda is generating the PDF.",
+          "Your PDF is ready to download.",
+        ];
+        const activeStep = stage
+          ? Math.min(steps.length - 1, stage * 2 - 1)
+          : -1;
+
+        state.textContent = states[stage];
+
+        bars.forEach((bar, index) => {
+          bar.style.background =
+            index < stage
+              ? "#4ade80"
+              : index === stage
+                ? "#7dd3fc"
+                : "#263342";
+        });
+
+        steps.forEach((step, index) => {
+          step.className = "step";
+
+          if (index < activeStep) {
+            step.classList.add("complete");
+          } else if (index === activeStep) {
+            step.classList.add("current");
+          }
+
+          if (index <= activeStep) {
+            step.classList.add("visible");
+          }
+        });
+
+        message.textContent = messages[stage];
+      }
+    </script>
+  </body>
+</html>
+
