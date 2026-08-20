@@ -21,17 +21,7 @@ Prototype: [mockup.html](mockup.html)
 - [ ] Preserve the centered layout and minimal visual language.
 - [ ] Keep the pipeline explanation accurate and understandable.
 
-## Phase 3 — Mocked application behavior
-
-- [ ] Replace the prototype script with mock data and mocked service functions.
-- [ ] Simulate service-status loading on page entry only.
-- [ ] Simulate submission and polling every five seconds.
-- [ ] Simulate PENDING → PROCESSING → COMPLETED.
-- [ ] Confirm that a new submission replaces the current job and resets progress.
-- [ ] Confirm that failures use a friendly error banner without adding a fifth progress state.
-- [ ] Exercise loading, empty, success, and error states before connecting AWS.
-
-## Phase 4 — Real API integration
+## Phase 3 — Real API integration
 
 - [ ] Add typed route handlers for status, job submission, job status, and PDF download.
 - [ ] Connect the browser to same-origin Next.js routes.
@@ -40,7 +30,7 @@ Prototype: [mockup.html](mockup.html)
 - [ ] Enable download only for a completed job.
 - [ ] Replace mocked responses with real backend responses.
 
-## Phase 5 — Verification and deployment
+## Release checklist
 
 - [ ] Verify responsive behavior on narrow and wide screens.
 - [ ] Verify keyboard navigation, labels, contrast, focus behavior, and live status updates.

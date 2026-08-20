@@ -47,5 +47,5 @@
 
 ## Completion handoff
 
-After this phase passes validation, Phase 3 can focus on making the mocked behavior realistic and stable before replacing it with real API requests in Phase 4.
+After this phase passes validation, Phase 3 can replace the prototype behavior with real API requests while preserving the established hooks, typed contracts, and UI behavior.
 
