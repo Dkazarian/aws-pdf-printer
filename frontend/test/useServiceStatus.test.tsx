@@ -1,13 +1,13 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useServiceStatus } from "../hooks/useServiceStatus";
-import { getMockServiceStatus } from "../lib/mockPrinterApi";
+import { getServiceStatus } from "../lib/printerApi";
 
-vi.mock("../lib/mockPrinterApi", () => ({
-  getMockServiceStatus: vi.fn(),
+vi.mock("../lib/printerApi", () => ({
+  getServiceStatus: vi.fn(),
 }));
 
-const mockedGetServiceStatus = vi.mocked(getMockServiceStatus);
+const mockedGetServiceStatus = vi.mocked(getServiceStatus);
 
 describe("useServiceStatus", () => {
   beforeEach(() => {
@@ -46,4 +46,3 @@ describe("useServiceStatus", () => {
     expect(result.current.error).toBe("Service unavailable");
   });
 });
-

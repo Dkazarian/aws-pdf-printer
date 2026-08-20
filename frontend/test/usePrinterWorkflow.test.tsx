@@ -2,18 +2,20 @@ import React from "react";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { usePrinterWorkflow } from "../hooks/usePrinterWorkflow";
-import {
-  getMockJobStatus,
-  submitMockJob,
-} from "../lib/mockPrinterApi";
+import { getJobStatus, PrinterRequestError, submitJob } from "../lib/printerApi";
 
-vi.mock("../lib/mockPrinterApi", () => ({
-  getMockJobStatus: vi.fn(),
-  submitMockJob: vi.fn(),
-}));
+vi.mock("../lib/printerApi", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/printerApi")>();
+  return {
+    ...actual,
+    getJobStatus: vi.fn(),
+    getJobResult: vi.fn(),
+    submitJob: vi.fn(),
+  };
+});
 
-const mockedGetJobStatus = vi.mocked(getMockJobStatus);
-const mockedSubmitJob = vi.mocked(submitMockJob);
+const mockedGetJobStatus = vi.mocked(getJobStatus);
+const mockedSubmitJob = vi.mocked(submitJob);
 
 describe("usePrinterWorkflow", () => {
   beforeEach(() => {
@@ -52,12 +54,45 @@ describe("usePrinterWorkflow", () => {
     expect(result.current.jobState).toBe("PROCESSING");
 
     await act(async () => {
-      vi.advanceTimersByTime(5000);
+      vi.advanceTimersByTime(10000);
       await Promise.resolve();
       await Promise.resolve();
     });
     expect(result.current.jobState).toBe("COMPLETED");
     expect(mockedGetJobStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it("silently backs off when a status poll is rate limited", async () => {
+    mockedGetJobStatus
+      .mockRejectedValueOnce(
+        new PrinterRequestError("busy", { code: "RATE_LIMITED", retryAfterSeconds: 20 }),
+      )
+      .mockResolvedValueOnce({ jobId: "job-1", status: "COMPLETED" });
+
+    const { result } = renderHook(() => usePrinterWorkflow());
+    act(() => result.current.setText("Hello AWS"));
+    await act(async () => {
+      await result.current.submit();
+    });
+
+    await act(async () => {
+      vi.advanceTimersByTime(5000);
+      await Promise.resolve();
+    });
+    expect(result.current.jobError).toBeNull();
+    expect(result.current.jobState).toBe("PENDING");
+
+    await act(async () => {
+      vi.advanceTimersByTime(19999);
+    });
+    expect(mockedGetJobStatus).toHaveBeenCalledOnce();
+
+    await act(async () => {
+      vi.advanceTimersByTime(1);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(result.current.jobState).toBe("COMPLETED");
   });
 
   it("shows validation errors and stops after a failed poll", async () => {

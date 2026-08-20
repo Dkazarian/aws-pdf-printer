@@ -1,4 +1,4 @@
-import type { JobStatusResponse, PrintJobResponse, ServiceStatusResponse } from "../types/printer";
+import type { JobStatusResponse, PrintJobResponse, ServiceStatusResponse } from "../../types/printer";
 
 type MockJob = {
   shouldFail: boolean;

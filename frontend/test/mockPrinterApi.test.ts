@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMockJobStatus, submitMockJob } from "../lib/mockPrinterApi";
+import { getMockJobStatus, submitMockJob } from "./fixtures/mockPrinterApi";
 
 describe("mock printer API", () => {
   it("moves a job from processing to completed", async () => {
@@ -23,4 +23,3 @@ describe("mock printer API", () => {
     });
   });
 });
-

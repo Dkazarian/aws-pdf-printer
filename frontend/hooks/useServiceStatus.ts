@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getMockServiceStatus } from "../lib/mockPrinterApi";
+import { getServiceStatus } from "../lib/printerApi";
 import type { ServiceState } from "../types/printer";
 
 export function useServiceStatus() {
@@ -11,7 +11,7 @@ export function useServiceStatus() {
   useEffect(() => {
     let cancelled = false;
 
-    void getMockServiceStatus()
+    void getServiceStatus()
       .then(() => {
         if (!cancelled) setState("ONLINE");
       })

@@ -43,7 +43,7 @@ export function PrinterDashboard() {
         <JobProgress state={workflow.jobState} />
         <AwsWorkflow state={workflow.jobState} />
         <ErrorBanner message={workflow.jobError} />
-        <DownloadButton disabled={workflow.jobState !== "COMPLETED"} />
+        <DownloadButton disabled={workflow.jobState !== "COMPLETED"} onClick={workflow.download} />
       </section>
 
       <a

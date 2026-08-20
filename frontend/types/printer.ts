@@ -24,4 +24,11 @@ export type PrinterError = {
   code?: string;
 };
 
+export type PrinterApiErrorCode =
+  | "CONFIGURATION_ERROR"
+  | "RATE_LIMITED"
+  | "UPSTREAM_ERROR"
+  | "NETWORK_ERROR"
+  | "INVALID_RESPONSE";
+
 
