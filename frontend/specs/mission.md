@@ -48,3 +48,5 @@ Future steps remain muted grey; completed steps become visible, and the active s
 
 The frontend does not own PDF generation, persistence, queueing, or infrastructure. Those responsibilities remain in the AWS backend. The frontend explains those responsibilities and presents their result.
 
+For this phase, a separate deployed test or staging environment is out of scope. Testing is limited to local unit/component tests and validation of the shared demo deployment; environment isolation can be added in a future phase.
+
