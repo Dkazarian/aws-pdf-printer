@@ -44,6 +44,37 @@
         letter-spacing: 0.16em;
       }
 
+      .topbar {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .language-switch {
+        align-items: center;
+        color: var(--muted);
+        display: flex;
+        font-size: 0.78rem;
+        gap: 5px;
+      }
+
+      .language-switch button {
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        cursor: pointer;
+        font: inherit;
+        padding: 6px 9px;
+      }
+
+      .language-switch button.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #082f49;
+        font-weight: 700;
+      }
+
       h1 {
         font-size: clamp(2rem, 7vw, 4rem);
         letter-spacing: -0.06em;
@@ -176,34 +207,42 @@
 
   <body>
     <main class="shell">
-      <div class="kicker">AWS PDF PRINTER</div>
-      <h1>Print plain text to PDF.</h1>
-      <p class="muted">
+      <div class="topbar">
+        <div class="kicker">AWS PDF PRINTER</div>
+        <div class="language-switch" role="group" aria-label="Language">
+          <span id="language-label">Language</span>
+          <button class="active" data-locale="en" type="button">EN</button>
+          <button data-locale="es" type="button">ES</button>
+        </div>
+      </div>
+      <h1 data-i18n="title">Print plain text to PDF.</h1>
+      <p class="muted" data-i18n="lede">
         Submit a job and watch the AWS pipeline process it in the background.
       </p>
 
       <div class="service">
         <span class="dot"></span>
-        Service status: <strong>ONLINE</strong>
+        <span data-i18n="serviceStatus">Service status</span>: <strong>ONLINE</strong>
       </div>
 
       <form id="job-form">
-        <label for="text">Text to print</label>
+        <label for="text" data-i18n="textToPrint">Text to print</label>
         <textarea
           id="text"
           maxlength="500"
+          data-i18n-placeholder="placeholder"
           placeholder="Type something to turn into a PDF..."
         ></textarea>
 
         <div class="actions">
           <span class="muted" id="count">0 / 500 characters</span>
-          <button class="submit" type="submit">Submit job</button>
+          <button class="submit" type="submit" data-i18n="submit">Submit job</button>
         </div>
       </form>
 
       <section class="section">
         <div class="section-head">
-          <strong>Job progress</strong>
+          <strong data-i18n="jobProgress">Job progress</strong>
           <span class="state" id="state">SENDING</span>
         </div>
 
@@ -215,22 +254,22 @@
         </div>
 
         <div class="labels">
-          <span>SENDING</span>
-          <span>PENDING</span>
-          <span>PROCESSING</span>
-          <span>COMPLETED</span>
+          <span data-i18n="sending">SENDING</span>
+          <span data-i18n="pending">PENDING</span>
+          <span data-i18n="processing">PROCESSING</span>
+          <span data-i18n="completed">COMPLETED</span>
         </div>
 
         <div id="steps">
-          <div class="step">API Gateway</div>
-          <div class="step">Lambda creates a job in DynamoDB</div>
-          <div class="step">Lambda detects the DynamoDB INSERT event and sends the job to the SQS queue</div>
-          <div class="step">Worker Lambda generates the PDF</div>
-          <div class="step">PDF stored in S3</div>
+          <div class="step" data-i18n="step0">API Gateway</div>
+          <div class="step" data-i18n="step1">Lambda creates a job in DynamoDB</div>
+          <div class="step" data-i18n="step2">Lambda detects the DynamoDB INSERT event and sends the job to the SQS queue</div>
+          <div class="step" data-i18n="step3">Worker Lambda generates the PDF</div>
+          <div class="step" data-i18n="step4">PDF stored in S3</div>
         </div>
 
         <p class="message" id="message"></p>
-        <button class="download" type="button" disabled>Download PDF</button>
+        <button class="download" type="button" disabled data-i18n="download">Download PDF</button>
       </section>
     </main>
 
@@ -242,13 +281,40 @@
       const message = document.getElementById("message");
       const bars = [...document.querySelectorAll(".bar span")];
       const steps = [...document.querySelectorAll(".step")];
+      const languageButtons = [...document.querySelectorAll("[data-locale]")];
+
+      const copy = {
+        en: {
+          language: "Language", title: "Print plain text to PDF.", lede: "Submit a job and watch the AWS pipeline process it in the background.", serviceStatus: "Service status", textToPrint: "Text to print", placeholder: "Type something to turn into a PDF...", submit: "Submit job", jobProgress: "Job progress", sending: "SENDING", pending: "PENDING", processing: "PROCESSING", completed: "COMPLETED", step0: "API Gateway", step1: "Lambda creates a job in DynamoDB", step2: "Lambda detects the DynamoDB INSERT event and sends the job to the SQS queue", step3: "Worker Lambda generates the PDF", step4: "PDF stored in S3", download: "Download PDF", characters: "characters"
+        },
+        es: {
+          language: "Idioma", title: "Imprime texto plano en PDF.", lede: "Envía un trabajo y observa cómo el flujo de AWS lo procesa en segundo plano.", serviceStatus: "Estado del servicio", textToPrint: "Texto para imprimir", placeholder: "Escribe algo para convertirlo en PDF...", submit: "Enviar trabajo", jobProgress: "Progreso del trabajo", sending: "ENVIANDO", pending: "EN COLA", processing: "PROCESANDO", completed: "COMPLETADO", step0: "API Gateway", step1: "Lambda crea un trabajo en DynamoDB", step2: "Lambda detecta la inserción en DynamoDB y envía el trabajo a SQS", step3: "Lambda worker genera el PDF", step4: "El PDF se guarda en S3", download: "Descargar PDF", characters: "caracteres"
+        }
+      };
+      let locale = "en";
+
+      languageButtons.forEach((button) => button.addEventListener("click", () => {
+        locale = button.dataset.locale;
+        document.documentElement.lang = locale;
+        const selected = copy[locale];
+        document.getElementById("language-label").textContent = selected.language;
+        document.querySelectorAll("[data-i18n]").forEach((element) => {
+          element.textContent = selected[element.dataset.i18n];
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+          element.placeholder = selected[element.dataset.i18nPlaceholder];
+        });
+        languageButtons.forEach((item) => item.classList.toggle("active", item === button));
+        count.textContent = text.value.length.toLocaleString() + " / 500 " + selected.characters;
+        paint();
+      }));
 
       let stage = 0;
       let timer;
 
       text.addEventListener("input", () => {
         count.textContent =
-          text.value.length.toLocaleString() + " / 500 characters";
+          text.value.length.toLocaleString() + " / 500 " + copy[locale].characters;
       });
 
       form.addEventListener("submit", (event) => {
@@ -268,12 +334,13 @@
       });
 
       function paint() {
-        const states = ["SENDING", "PENDING", "PROCESSING", "COMPLETED"];
+        const selected = copy[locale];
+        const states = [selected.sending, selected.pending, selected.processing, selected.completed];
         const messages = [
           "",
-          "The job is being created and queued.",
-          "A worker Lambda is generating the PDF.",
-          "Your PDF is ready to download.",
+          locale === "es" ? "El trabajo se está creando y poniendo en cola." : "The job is being created and queued.",
+          locale === "es" ? "Una Lambda worker está generando el PDF." : "A worker Lambda is generating the PDF.",
+          locale === "es" ? "Tu PDF está listo para descargar." : "Your PDF is ready to download.",
         ];
         const activeStep = stage
           ? Math.min(steps.length - 1, stage * 2 - 1)

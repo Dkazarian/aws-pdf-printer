@@ -15,20 +15,29 @@ Prototype: [mockup.html](mockup.html)
 
 ## Phase 2 — React component structure
 
-- [ ] Refactor the chosen design into focused components.
-- [ ] Define typed job states and UI state transitions.
-- [ ] Create components for service status, text form, progress bar, AWS pipeline, error message, and download action.
-- [ ] Preserve the centered layout and minimal visual language.
-- [ ] Keep the pipeline explanation accurate and understandable.
+- [x] Refactor the chosen design into focused components.
+- [x] Define typed job states and UI state transitions.
+- [x] Create components for service status, text form, progress bar, AWS pipeline, error message, and download action.
+- [x] Preserve the centered layout and minimal visual language.
+- [x] Keep the pipeline explanation accurate and understandable.
 
 ## Phase 3 — Real API integration
 
-- [ ] Add typed route handlers for status, job submission, job status, and PDF download.
-- [ ] Connect the browser to same-origin Next.js routes.
-- [ ] Forward API_KEY only from server-side route handlers.
-- [ ] Poll real job status every five seconds and stop after a terminal state.
-- [ ] Enable download only for a completed job.
-- [ ] Replace mocked responses with real backend responses.
+- [x] Add typed route handlers for status, job submission, job status, and PDF download.
+- [x] Connect the browser to same-origin Next.js routes.
+- [x] Forward API_KEY only from server-side route handlers.
+- [x] Poll real job status every five seconds and stop after a terminal state.
+- [x] Enable download only for a completed job.
+- [x] Replace mocked responses with real backend responses.
+
+## Phase 4 — Internationalization
+
+- [ ] Add a language switch for English and Spanish.
+- [ ] Translate all user-facing labels, actions, statuses, progress steps, and helper text.
+- [ ] Preserve the selected language while the user interacts with the mockup.
+- [ ] Update the production UI and add coverage for switching languages.
+
+Prototype update: [mockup.html](mockup.html)
 
 ## Release checklist
 
