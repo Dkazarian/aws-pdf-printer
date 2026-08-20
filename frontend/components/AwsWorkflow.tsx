@@ -1,5 +1,6 @@
 import React from "react";
 import type { JobState } from "../types/printer";
+import { useI18n } from "./I18n";
 
 type AwsWorkflowProps = {
   state?: JobState;
@@ -14,18 +15,19 @@ const workflowSteps = [
 ];
 
 export function AwsWorkflow({ state = "SENDING" }: AwsWorkflowProps) {
+  const { t } = useI18n();
   const activeIndex = state === "NONE" ? -1 : Math.min(workflowSteps.length - 1, statesToStepIndex[state]);
 
   return (
-    <div className="aws-workflow" aria-label="AWS processing workflow">
-      <p className="workflow-heading">What happens behind the scenes</p>
+    <div className="aws-workflow" aria-label={t.workflowLabel}>
+      <p className="workflow-heading">{t.behindScenes}</p>
       {workflowSteps.map((step, index) => (
         <div
           className={`workflow-step ${index === activeIndex ? "current" : index < activeIndex ? "complete" : ""}`}
           key={step}
         >
           <span aria-hidden="true">●</span>
-          <span>{step}</span>
+          <span>{t.workflow[index]}</span>
         </div>
       ))}
     </div>

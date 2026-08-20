@@ -1,4 +1,5 @@
 import React from "react";
+import { useI18n } from "./I18n";
 
 type PrintJobFormProps = {
   text: string;
@@ -15,6 +16,8 @@ export function PrintJobForm({
   onSubmit,
   disabled = submitting,
 }: PrintJobFormProps) {
+  const { t } = useI18n();
+
   return (
     <form
       className="print-form"
@@ -23,22 +26,22 @@ export function PrintJobForm({
         onSubmit();
       }}
     >
-      <label htmlFor="print-text">Text to print</label>
+      <label htmlFor="print-text">{t.textToPrint}</label>
       <textarea
         id="print-text"
         maxLength={500}
         onChange={(event) => onTextChange(event.target.value)}
-        placeholder="Type something to turn into a PDF..."
+        placeholder={t.placeholder}
         value={text}
       />
       <div className="form-actions">
-        <span className="character-count">{text.length.toLocaleString()} / 500 characters</span>
+        <span className="character-count">{text.length.toLocaleString()} / 500 {t.characters}</span>
         <button
           className="primary-button"
           disabled={disabled || !text.trim() || text.length > 500}
           type="submit"
         >
-          {submitting ? "Submitting..." : "Submit job"}
+          {submitting ? t.submitting : t.submitText}
         </button>
       </div>
     </form>

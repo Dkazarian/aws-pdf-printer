@@ -47,7 +47,7 @@ describe("PrintJobForm", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Submit job" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Submit text" })).toBeDisabled();
   });
 
   it.each([
@@ -64,6 +64,6 @@ describe("PrintJobForm", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Submit job" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Submit text" })).toBeDisabled();
   });
 });

@@ -40,6 +40,36 @@ button:disabled {
   margin-bottom: 28px;
 }
 
+.language-switch {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 0.78rem;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-bottom: 28px;
+}
+
+.language-switch span {
+  margin-right: 4px;
+}
+
+.language-switch button {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font: inherit;
+  padding: 6px 10px;
+}
+
+.language-switch button.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #082f49;
+  font-weight: 700;
+}
+
 .eyebrow,
 .service-label,
 .workflow-heading {

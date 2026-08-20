@@ -211,13 +211,13 @@
         <div class="kicker">AWS PDF PRINTER</div>
         <div class="language-switch" role="group" aria-label="Language">
           <span id="language-label">Language</span>
-          <button class="active" data-locale="en" type="button">EN</button>
-          <button data-locale="es" type="button">ES</button>
+          <button class="active" data-locale="en" type="button" aria-pressed="true">EN</button>
+          <button data-locale="es" type="button" aria-pressed="false">ES</button>
         </div>
       </div>
       <h1 data-i18n="title">Print plain text to PDF.</h1>
       <p class="muted" data-i18n="lede">
-        Submit a job and watch the AWS pipeline process it in the background.
+        A serverless text-to-PDF converter powered by AWS.
       </p>
 
       <div class="service">
@@ -236,7 +236,7 @@
 
         <div class="actions">
           <span class="muted" id="count">0 / 500 characters</span>
-          <button class="submit" type="submit" data-i18n="submit">Submit job</button>
+          <button class="submit" type="submit" data-i18n="submit">Submit text</button>
         </div>
       </form>
 
@@ -285,18 +285,18 @@
 
       const copy = {
         en: {
-          language: "Language", title: "Print plain text to PDF.", lede: "Submit a job and watch the AWS pipeline process it in the background.", serviceStatus: "Service status", textToPrint: "Text to print", placeholder: "Type something to turn into a PDF...", submit: "Submit job", jobProgress: "Job progress", sending: "SENDING", pending: "PENDING", processing: "PROCESSING", completed: "COMPLETED", step0: "API Gateway", step1: "Lambda creates a job in DynamoDB", step2: "Lambda detects the DynamoDB INSERT event and sends the job to the SQS queue", step3: "Worker Lambda generates the PDF", step4: "PDF stored in S3", download: "Download PDF", characters: "characters"
+          language: "Language", title: "Print plain text to PDF.", lede: "A serverless text-to-PDF converter powered by AWS.", serviceStatus: "Service status", textToPrint: "Text to print", placeholder: "Type something to turn into a PDF...", submit: "Submit text", jobProgress: "Job progress", sending: "SENDING", pending: "PENDING", processing: "PROCESSING", completed: "COMPLETED", step0: "API Gateway", step1: "Lambda creates a job in DynamoDB", step2: "Lambda detects the DynamoDB INSERT event and sends the job to the SQS queue", step3: "Worker Lambda generates the PDF", step4: "PDF stored in S3", download: "Download PDF", characters: "characters"
         },
         es: {
-          language: "Idioma", title: "Imprime texto plano en PDF.", lede: "Envía un trabajo y observa cómo el flujo de AWS lo procesa en segundo plano.", serviceStatus: "Estado del servicio", textToPrint: "Texto para imprimir", placeholder: "Escribe algo para convertirlo en PDF...", submit: "Enviar trabajo", jobProgress: "Progreso del trabajo", sending: "ENVIANDO", pending: "EN COLA", processing: "PROCESANDO", completed: "COMPLETADO", step0: "API Gateway", step1: "Lambda crea un trabajo en DynamoDB", step2: "Lambda detecta la inserción en DynamoDB y envía el trabajo a SQS", step3: "Lambda worker genera el PDF", step4: "El PDF se guarda en S3", download: "Descargar PDF", characters: "caracteres"
+          language: "Idioma", title: "Imprime texto plano en PDF.", lede: "Un conversor serverless de texto a PDF impulsado por AWS.", serviceStatus: "Estado del servicio", textToPrint: "Texto para imprimir", placeholder: "Escribe algo para convertirlo en PDF...", submit: "Enviar texto", jobProgress: "Progreso del trabajo", sending: "ENVIANDO", pending: "EN COLA", processing: "PROCESANDO", completed: "COMPLETADO", step0: "API Gateway", step1: "Lambda crea un trabajo en DynamoDB", step2: "Lambda detecta la inserción en DynamoDB y envía el trabajo a SQS", step3: "Lambda worker genera el PDF", step4: "El PDF se guarda en S3", download: "Descargar PDF", characters: "caracteres"
         }
       };
-      let locale = "en";
+      const storedLocale = window.localStorage.getItem("aws-printer-locale");
+      let locale = storedLocale === "es" || storedLocale === "en" ? storedLocale : "en";
 
-      languageButtons.forEach((button) => button.addEventListener("click", () => {
-        locale = button.dataset.locale;
-        document.documentElement.lang = locale;
+      function applyLocale() {
         const selected = copy[locale];
+        document.documentElement.lang = locale;
         document.getElementById("language-label").textContent = selected.language;
         document.querySelectorAll("[data-i18n]").forEach((element) => {
           element.textContent = selected[element.dataset.i18n];
@@ -304,10 +304,22 @@
         document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
           element.placeholder = selected[element.dataset.i18nPlaceholder];
         });
-        languageButtons.forEach((item) => item.classList.toggle("active", item === button));
+        languageButtons.forEach((item) => {
+          const active = item.dataset.locale === locale;
+          item.classList.toggle("active", active);
+          item.setAttribute("aria-pressed", String(active));
+        });
         count.textContent = text.value.length.toLocaleString() + " / 500 " + selected.characters;
+      }
+
+      languageButtons.forEach((button) => button.addEventListener("click", () => {
+        locale = button.dataset.locale;
+        window.localStorage.setItem("aws-printer-locale", locale);
+        applyLocale();
         paint();
       }));
+
+      applyLocale();
 
       let stage = 0;
       let timer;

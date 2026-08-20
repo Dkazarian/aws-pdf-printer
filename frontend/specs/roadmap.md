@@ -32,19 +32,19 @@ Prototype: [mockup.html](mockup.html)
 
 ## Phase 4 — Internationalization
 
-- [ ] Add a language switch for English and Spanish.
-- [ ] Translate all user-facing labels, actions, statuses, progress steps, and helper text.
-- [ ] Preserve the selected language while the user interacts with the mockup.
-- [ ] Update the production UI and add coverage for switching languages.
+- [x] Add a language switch for English and Spanish.
+- [x] Translate all user-facing labels, actions, statuses, progress steps, and helper text.
+- [x] Preserve the selected language while the user interacts with the mockup.
+- [x] Update the production UI and add coverage for switching languages.
 
 Prototype update: [mockup.html](mockup.html)
 
 ## Release checklist
 
-- [ ] Verify responsive behavior on narrow and wide screens.
-- [ ] Verify keyboard navigation, labels, contrast, focus behavior, and live status updates.
-- [ ] Add tests for route handlers and the submit-to-download workflow.
-- [ ] Run lint and production build checks.
+- [x] Verify responsive behavior on narrow and wide screens.
+- [x] Verify keyboard navigation, labels, contrast, focus behavior, and live status updates.
+- [x] Add tests for route handlers and the submit-to-download workflow.
+- [x] Run lint and production build checks.
 - [ ] Verify Vercel environment variables and perform a deployed smoke test.
 
 ## Definition of done

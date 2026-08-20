@@ -9,19 +9,28 @@ import { ErrorBanner } from "./ErrorBanner";
 import { JobProgress } from "./JobProgress";
 import { PrintJobForm } from "./PrintJobForm";
 import { ServiceStatus } from "./ServiceStatus";
+import { LanguageSwitch, translateError, useI18n } from "./I18n";
+import type { JobState } from "../types/printer";
 
 export function PrinterDashboard() {
   const service = useServiceStatus();
   const workflow = usePrinterWorkflow();
+  const { t } = useI18n();
+  const stateLabels: Record<JobState, string> = {
+    NONE: "",
+    SENDING: t.sending,
+    PENDING: t.pending,
+    PROCESSING: t.processing,
+    COMPLETED: t.completed,
+  };
 
   return (
     <main className="shell">
+      <LanguageSwitch />
       <section className="hero">
         <p className="eyebrow">AWS PDF PRINTER</p>
-        <h1>Print plain text to PDF.</h1>
-        <p className="lede">
-          Submit a job and watch the AWS pipeline process it in the background.
-        </p>
+        <h1>{t.title}</h1>
+        <p className="lede">{t.lede}</p>
       </section>
 
       <ServiceStatus state={service.state} error={service.error} />
@@ -35,14 +44,14 @@ export function PrinterDashboard() {
 
       <section className="job-card" aria-labelledby="job-progress-heading">
         <div className="section-heading">
-          <h2 id="job-progress-heading">Job progress</h2>
+          <h2 id="job-progress-heading">{t.jobProgress}</h2>
           {workflow.jobState !== "NONE" && (
-            <span className="job-state">{workflow.jobState}</span>
+            <span className="job-state">{stateLabels[workflow.jobState]}</span>
           )}
         </div>
         <JobProgress state={workflow.jobState} />
         <AwsWorkflow state={workflow.jobState} />
-        <ErrorBanner message={workflow.jobError} />
+        <ErrorBanner message={translateError(workflow.jobError, t)} />
         <DownloadButton disabled={workflow.jobState !== "COMPLETED"} onClick={workflow.download} />
       </section>
 
@@ -52,7 +61,7 @@ export function PrinterDashboard() {
         rel="noreferrer"
         target="_blank"
       >
-        View source on GitHub
+        {t.viewSource}
       </a>
     </main>
   );
