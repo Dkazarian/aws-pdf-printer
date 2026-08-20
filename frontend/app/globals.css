@@ -1,0 +1,27 @@
+:root {
+  color-scheme: dark;
+  --background: #0d1117;
+  --panel: #151c25;
+  --line: #2a3543;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #7dd3fc;
+  --success: #4ade80;
+  --danger: #fb7185;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(circle at top right, #16283a, var(--background) 45%); color: var(--text); font-family: Arial, sans-serif; }
+button { cursor: pointer; }
+.shell { margin: 0 auto; max-width: 760px; padding: 12vh 24px; }
+.eyebrow, .label { color: var(--accent); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; margin: 0 0 14px; }
+h1 { font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: -0.06em; line-height: 0.95; margin: 0; }
+.lede { color: var(--muted); font-size: 1.1rem; line-height: 1.6; max-width: 520px; }
+.status-card { align-items: center; background: rgba(21, 28, 37, 0.9); border: 1px solid var(--line); border-radius: 18px; display: flex; gap: 18px; margin-top: 64px; padding: 24px; }
+.status-dot { border-radius: 50%; height: 14px; width: 14px; }
+.status-dot.online { background: var(--success); box-shadow: 0 0 18px var(--success); }
+.status-dot.offline { background: var(--danger); }
+.status-card h2 { font-size: 1.5rem; margin: 0; }
+.status-card button { background: var(--accent); border: 0; border-radius: 999px; color: #082f49; font-weight: 700; margin-left: auto; padding: 11px 18px; }
+.status-card button:disabled { cursor: wait; opacity: 0.55; }
+.error { color: var(--danger); margin: 8px 0 0; }
