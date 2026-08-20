@@ -6,7 +6,7 @@ The frontend will be developed in small, reviewable stages. The visual direction
 
 - [x] Sketch the centered minimal-dashboard layout.
 - [x] Include service status, text input, submit button, progress bar, visible friendly AWS pipeline, error banner, and download action.
-- [x] Use NONE, PENDING, PROCESSING, and COMPLETED.
+- [x] Use SENDING, PENDING, PROCESSING, and COMPLETED.
 - [x] Grey out future AWS steps and reveal them as the job advances.
 - [x] Add a simple mock interaction with five-second state transitions.
 - [x] Review the mockup and decide final visual details.
@@ -51,3 +51,4 @@ Prototype: [mockup.html](mockup.html)
 ## Definition of done
 
 A user can submit text, understand the visible AWS processing flow, observe real job progress, download a completed PDF, and recover from common failures without exposing credentials.
+

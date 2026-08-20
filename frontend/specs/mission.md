@@ -15,13 +15,14 @@ The primary audience is anyone exploring or evaluating the working demo. They sh
 The frontend is a minimal, centered dashboard containing:
 
 - A text input and submit button.
+- The submit button disabled for blank, whitespace-only, or over-limit input.
 - A service-status indicator checked when the page loads: CHECKING, ONLINE, or OFFLINE.
-- A progress bar with the states NONE, PENDING, PROCESSING, and COMPLETED.
+- A progress bar with the states SENDING, QUEUED, PROCESSING, and COMPLETED.
 - A greyed AWS pipeline that becomes more visible as the job advances.
 - A download button enabled only when the job is COMPLETED.
 - A friendly error banner when a request or job fails. Failure does not become a fifth progress state.
 
-Polling should happen approximately every five seconds. A new submission replaces the current job and restarts the progress experience.
+Polling should happen approximately every five seconds. The submit button is disabled while a job is being sent, queued, or processed, and becomes available again after completion or failure.
 
 ## AWS workflow shown to users
 
@@ -46,3 +47,4 @@ Future steps remain muted grey; completed steps become visible, and the active s
 ## Scope boundary
 
 The frontend does not own PDF generation, persistence, queueing, or infrastructure. Those responsibilities remain in the AWS backend. The frontend explains those responsibilities and presents their result.
+

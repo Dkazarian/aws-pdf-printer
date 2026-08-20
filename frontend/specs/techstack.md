@@ -6,10 +6,10 @@
 | --- | --- | --- |
 | Interface | Minimal centered dashboard | The demo has one primary task and should feel focused rather than like an administration console. |
 | Prototype | Plain HTML/CSS with lightweight browser JavaScript | Allows visual decisions before committing to React components. |
-| Progress model | NONE, PENDING, PROCESSING, COMPLETED | Mirrors the user-facing job lifecycle. |
+| Progress model | SENDING, QUEUED, PROCESSING, COMPLETED | Mirrors the user-facing job lifecycle; QUEUED maps to the API's PENDING state. |
 | Pipeline explanation | Always-visible, friendly explanation with greyed future steps and emphasized active steps | Makes the asynchronous AWS architecture understandable during the demo without requiring AWS knowledge. |
 | Polling | Approximately every five seconds | Gives responsive feedback without excessive requests. |
-| Replacement behavior | A new submission replaces the current job | Keeps the interface focused on one active demo job. |
+| Submission behavior | Disable the submit button while a job is in progress | Keeps the demo focused on one active job and prevents overlapping submissions. |
 
 ## Application stack
 
@@ -28,7 +28,7 @@
 The frontend consumes:
 
 - GET /status for service status.
-- POST /jobs to submit non-empty text up to 10,000 characters.
+- POST /jobs to submit non-empty text up to 500 characters.
 - GET /jobs/{jobId} to read the job status.
 - GET /jobs/{jobId}/result to download a completed PDF.
 
@@ -49,3 +49,4 @@ The browser should call same-origin Next.js /api/* routes. Server-side route han
 - Exact visual treatment of failed jobs and failed pipeline steps.
 - Polling should stop at either COMPLETED or backend FAILED; the failure is presented in a banner.
 - Whether a future version should support job history or remain single-job focused.
+

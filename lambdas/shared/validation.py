@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-MAX_TEXT_LENGTH = 10_000
+MAX_TEXT_LENGTH = 500
 
 
 def parse_create_job_request(raw_body: str | None) -> str:

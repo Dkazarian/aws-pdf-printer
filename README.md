@@ -46,7 +46,7 @@ Field meanings:
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | String | UUID and partition key for the job. |
-| `text` | String | Non-empty text to render in the PDF; maximum 10,000 characters. |
+| `text` | String | Non-empty text to render in the PDF; maximum 500 characters. |
 | `status` | String | `PENDING`, `PROCESSING`, `COMPLETED`, or `FAILED`. |
 | `ttl` | Number | Unix timestamp used by DynamoDB TTL; set to approximately one day after creation. |
 | `result_key` | String | Optional S3 key, added when the job completes. |
@@ -90,7 +90,7 @@ curl -X POST \
   "$BASE_URL/jobs"
 ```
 
-The request must contain a non-empty string in `text`, up to 10,000 characters. A successful request returns `201`:
+The request must contain a non-empty string in `text`, up to 500 characters. A successful request returns `201`:
 
 ```json
 {"job_id":"<uuid>","status":"PENDING"}
