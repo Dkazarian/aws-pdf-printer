@@ -2,6 +2,8 @@
 
 An asynchronous PDF-printing service built with AWS Lambda and Terraform. A client submits plain text, the service creates a job, generates a PDF in the background, stores it in a private S3 bucket, and makes the completed PDF available for download.
 
+Try it at https://aws-printer-sim.vercel.app
+
 ## Architecture
 
 ```text
@@ -54,9 +56,7 @@ Field meanings:
 
 `result_key` and `error` are mutually associated with the terminal status: completed jobs have `result_key`, while failed jobs have `error`. The DynamoDB stream observes new job inserts and starts asynchronous processing through SQS. Generated PDFs are stored under `processed/` in S3 and expire after one day through the bucket lifecycle policy.
 
-## Demo application
-
-The browser-based demo application that consumes this API is still a work in progress. The API and AWS infrastructure are complete.
+## Deployment
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for instructions on deploying and testing the service with AWS or LocalStack.
 
