@@ -2,7 +2,9 @@
 
 An asynchronous PDF-printing service built with AWS Lambda and Terraform. A client submits plain text, the service creates a job, generates a PDF in the background, stores it in a private S3 bucket, and makes the completed PDF available for download.
 
-Try it at https://aws-printer-sim.vercel.app
+Try it at https://aws-pdf-printer.vercel.app
+
+![AWS PDF Printer web interface](screenshot.png)
 
 ## Architecture
 
