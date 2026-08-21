@@ -57,7 +57,7 @@ export function PrinterDashboard() {
 
       <a
         className="github-link"
-        href="https://github.com/Dkazarian/aws-printer-sim/tree/master"
+        href="https://github.com/Dkazarian/aws-pdf-printer/tree/master"
         rel="noreferrer"
         target="_blank"
       >

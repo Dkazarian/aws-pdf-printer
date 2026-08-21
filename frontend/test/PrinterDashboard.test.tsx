@@ -11,7 +11,7 @@ describe("PrinterDashboard", () => {
     expect(screen.queryByText("NONE")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View source on GitHub" })).toHaveAttribute(
       "href",
-      "https://github.com/Dkazarian/aws-printer-sim/tree/master",
+      "https://github.com/Dkazarian/aws-pdf-printer/tree/master",
     );
   });
 });
